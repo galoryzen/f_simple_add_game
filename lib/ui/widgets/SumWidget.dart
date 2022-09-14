@@ -10,7 +10,7 @@ class SumWidget extends StatelessWidget {
   @override
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<SumController>();
+    SumController controller = Get.find<SumController>();
     controller.setValues();
     return Column(
       children: [
@@ -28,6 +28,7 @@ class SumWidget extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 36,
                           ),
+                          key: const Key('score'),
                         )),
                     const Spacer(flex: 1),
                     Padding(
