@@ -37,7 +37,7 @@ class MockSumController extends GetxService with Mock implements SumController {
 
   @override
   void setValues() {
-    print("Set Values");
+    // print("Set Values");
     _op1.value = RandomInt.generate(max: 50);
     _op2.value = RandomInt.generate(max: 50);
 
@@ -63,93 +63,99 @@ class MockSumController extends GetxService with Mock implements SumController {
 }
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    MockSumController mockSumController = MockSumController();
-    Get.put<SumController>(mockSumController);
+  group('Some Group', () {
+    late MockSumController mockSumController;
 
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
+    setUp(() {
+      mockSumController = MockSumController();
+      Get.put<SumController>(mockSumController);
+    });
 
-    await tester.pumpAndSettle();
+    testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+      // Build our app and trigger a frame.
+      SumController mockSumController = Get.find();
 
-    expect(find.text('Score: 0'), findsOneWidget);
+      await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
 
-    await tester.tap(find.ancestor(
-        of: find.text(mockSumController.rta.toString()),
-        matching: find.byType(ElevatedButton)));
+      await tester.pumpAndSettle();
 
-    await tester.pumpAndSettle();
+      expect(find.text('Score: 0'), findsOneWidget);
 
-    expect(find.text('Score: 1'), findsOneWidget);
+      await tester.tap(find.ancestor(
+          of: find.text(mockSumController.rta.toString()),
+          matching: find.byType(ElevatedButton)));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 1'), findsOneWidget);
+      mockSumController.reset();
+    });
+
+    testWidgets('Testing wrong answer', (WidgetTester tester) async {
+      // Build our app and trigger a frame.
+      SumController mockSumController = Get.find();
+      await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
+
+      expect(find.text('Score: 0'), findsOneWidget);
+
+      await tester.tap(find.ancestor(
+          of: find.text((mockSumController.rta - 1).toString()),
+          matching: find.byType(ElevatedButton)));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 0'), findsOneWidget);
+      mockSumController.reset();
+    });
+
+    testWidgets('Testing reset after good answer', (WidgetTester tester) async {
+      // Build our app and trigger a frame.
+      await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 0'), findsOneWidget);
+
+      SumController sumController = Get.find();
+
+      await tester.tap(find.ancestor(
+          of: find.text(sumController.rta.toString()),
+          matching: find.byType(ElevatedButton)));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 1'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('reset')));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 0'), findsOneWidget);
+      mockSumController.reset();
+    });
+
+    testWidgets('Testing reset changes answers', (WidgetTester tester) async {
+      // Build our app and trigger a frame.
+      await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 0'), findsOneWidget);
+
+      SumController sumController = Get.find();
+
+      int op1 = sumController.op1;
+      int op2 = sumController.op2;
+
+      await tester.tap(find.byKey(const Key('reset')));
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Score: 0'), findsOneWidget);
+
+      expect(op1 != sumController.op1, true);
+      expect(op2 != sumController.op2, true);
+      mockSumController.reset();
+    });
   });
-
-  testWidgets('Testing wrong answer', (WidgetTester tester) async {
-    MockSumController mockSumController = MockSumController();
-    Get.put<SumController>(mockSumController);
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
-
-    await tester.pumpAndSettle();
-    print("Hola");
-    print(mockSumController.score);
-    print(find.byKey(const Key('score')).toString());
-    print("Chao");
-    // expect(find.text('Score: 0'), findsOneWidget);
-
-    // await tester.tap(find.ancestor(
-    //     of: find.text((mockSumController.rta - 1).toString()),
-    //     matching: find.byType(ElevatedButton)));
-
-    // await tester.pumpAndSettle();
-
-    // expect(find.text('Score: 0'), findsOneWidget);
-  });
-
-  // testWidgets('Testing reset after good answer', (WidgetTester tester) async {
-  //   // Build our app and trigger a frame.
-  //   await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
-
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.text('Score: 0'), findsOneWidget);
-
-  //   SumController sumController = Get.find();
-
-  //   await tester.tap(find.ancestor(
-  //       of: find.text(sumController.rta.toString()),
-  //       matching: find.byType(ElevatedButton)));
-
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.text('Score: 1'), findsOneWidget);
-
-  //   await tester.tap(find.byKey(const Key('reset')));
-
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.text('Score: 0'), findsOneWidget);
-  // });
-
-  // testWidgets('Testing reset changes answers', (WidgetTester tester) async {
-  //   // Build our app and trigger a frame.
-  //   await tester.pumpWidget(const GetMaterialApp(home: SumWidget()));
-
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.text('Score: 0'), findsOneWidget);
-
-  //   SumController sumController = Get.find();
-
-  //   int op1 = sumController.op1;
-  //   int op2 = sumController.op2;
-
-  //   await tester.tap(find.byKey(const Key('reset')));
-
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.text('Score: 0'), findsOneWidget);
-
-  //   expect(op1 != sumController.op1, true);
-  //   expect(op2 != sumController.op2, true);
-  // });
 }

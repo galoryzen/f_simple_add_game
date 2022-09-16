@@ -22,7 +22,7 @@ class SumController extends GetxController {
   List<int> get Rta => _vectorRta;
 
   void setValues() {
-    print("Set Values");
+    // print("Set Values");
     _op1.value = RandomInt.generate(max: 50);
     _op2.value = RandomInt.generate(max: 50);
 
